@@ -32,4 +32,11 @@ class word_countTest {
         assertEquals(3, wordcount.count(" ein  erster   Text"));
         assertEquals(3, wordcount.count("ein:erster.Text"));
     }
+    @Test
+    void vielleichtfalsch(){
+        assertEquals(1, wordcount.count("a"));
+        assertEquals(1, wordcount.count(" a"));
+        assertEquals(1, wordcount.count("a "));
+        assertEquals(1, wordcount.count(" a "));
+    }
 }
