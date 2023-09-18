@@ -5,6 +5,22 @@ public class wordcount {
 
     }
     public static int count(String s){
-        return 0;
+        String s1 = s.replaceAll("[:.]", " ");
+        if (s.isBlank() || s.isEmpty()){
+            return 0;
+        }
+
+        int zaehler = 0;
+        if (!s1.contains(" ")){
+            return 1;
+        }
+
+        String array [] = s1.split(" ");
+        for (int i = 0; i < array.length; i++) {
+            if (!array[i].isBlank()){
+                zaehler++;
+            }
+        }
+        return zaehler;
     }
 }
