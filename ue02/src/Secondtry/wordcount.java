@@ -11,7 +11,9 @@ public class wordcount {
                 if (Character.isLetter(c)) {
                     context.counter++;
                     return INWORD;
-                } else {
+                } else if (c== '<'){
+                    return InTag;
+                }else {
                     return NOWORD; // oder: return this;
                 }
             }
@@ -19,24 +21,27 @@ public class wordcount {
 
         INWORD {
             State handleChar(char c, wordcount context) {
-                if (c == ':'|| c== '.' || c == '\\' || c == ' ') {
+                if (c == ':'|| c== '.' || c == '\\' || c == ' ' || c == '\"') {
                     return NOWORD;
 
-              /*  }  else if(c == '<'){
+              }  else if(c == '<'){
                     return InTag;
-               */ }
+                }
                 else {
                     return INWORD; // oder: return this;
                 }
             }
-        };
-/*
-        InAnf{
-
         },
         InTag{
-
-       };        */
+            State handleChar(char c, wordcount context) {
+                if (c == '>') {
+                    return NOWORD;
+               }
+                else {
+                    return InTag; // oder: return this;
+                }
+            }
+       };
         abstract State handleChar(char c, wordcount context);
 
 
