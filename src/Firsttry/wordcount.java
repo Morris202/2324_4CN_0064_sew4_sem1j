@@ -5,7 +5,7 @@ public class wordcount {
 
     }
     public static int count(String s){
-        String s1 = s.replaceAll("(<[A-z =]+>)|[:.\"]", " ");
+        String s1 = s.replaceAll("(<[A-z \\\\=\"]+>?)|[:.\"]", " ");
         if (s.isBlank() || s.isEmpty()){
             return 0;
         }
