@@ -20,7 +20,6 @@ public class wordcount {
         INWORD {
             State handleChar(char c, wordcount context) {
                 if (c == ':'|| c== '.' || c == '\\' || c == ' ') {
-                    context.counter++;
                     return NOWORD;
 
               /*  }  else if(c == '<'){
