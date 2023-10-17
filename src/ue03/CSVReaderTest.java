@@ -25,4 +25,12 @@ class CSVReaderTest {
         List<String> result = reader.split(csvString);
         assertEquals(expected, result);
     }
+    @Test
+    public void testValidCSVFields() {
+        String csvString = "\"ok\",\"ok, ok\",\"nicht\"ok,\"nicht ok\"";
+        CSVReader reader = new CSVReader(csvString);
+        List<String> expected = List.of("ok", "ok, ok", "nicht\"ok", "nicht ok");
+        List<String> result = reader.split(csvString);
+        assertEquals(expected, result);
+    }
 }

@@ -11,7 +11,7 @@ public class CSVReader {
      enum State {
          NOWORD{
              State handleChar(char c, CSVReader reader) {
-                 if (Character.isLetter(c) || Character.isDigit(c)) {
+                 if (Character.isLetter(c) || Character.isDigit(c) || Character.isSpaceChar(c)) {
                      reader.results.add(reader.puffer);
                      reader.puffer = "";
                      reader.puffer+=c;
