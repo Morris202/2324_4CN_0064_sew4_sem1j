@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/state-diagram
+
+
+[*] --> NoWord: counter = 0
+NoWord --> InTag: html <
+NoWord --> Word: counter++
+Word --> NoWord: sonstiges
+InTag --> Word: html <
+InANF --> NoWord: "
+InANF --> Word: "
+Word --> InANF
+Word --> Word: Buchstabe
+InSLASH --> InANF: /
+InANF --> InSLASH: /
+}
+@enduml
