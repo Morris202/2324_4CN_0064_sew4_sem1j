@@ -8,10 +8,13 @@ NoWord --> Word: counter++
 Word --> NoWord: sonstiges
 InTag --> Word: html <
 InANF --> NoWord: "
+NoWord --> NoWord
 InANF --> Word: "
+InTag --> InTag
+InANF --> InANF
 Word --> InANF
 Word --> Word: Buchstabe
-InSLASH --> InANF: /
+InSLASH --> InANF: egal
 InANF --> InSLASH: /
 }
 @enduml

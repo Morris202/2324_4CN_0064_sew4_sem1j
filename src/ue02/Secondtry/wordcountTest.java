@@ -1,4 +1,4 @@
-package Secondtry;
+package ue02.Secondtry;
 
 import org.junit.jupiter.api.Test;
 

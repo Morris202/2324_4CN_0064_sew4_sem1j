@@ -1,7 +1,6 @@
-package Secondtry;
+//Morris Tichy 4CN
+package ue02.Secondtry;
 
-import javax.swing.plaf.nimbus.State;
-import java.io.IOException;
 /**
  * Die Klasse "wordcount" dient dazu, die Anzahl der Wörter in einem gegebenen Text zu zählen, wobei die Textverarbeitung von einem endlichen Automaten mit verschiedenen Zuständen gesteuert wird.
  */

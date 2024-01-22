@@ -1,3 +1,4 @@
+//Morris Tichy 4CN
 /**
  * Dies ist die Dokumentation für die Klasse wordcount, die zur Zählung der Anzahl von Wörtern in einem gegebenen String dient.
  *
