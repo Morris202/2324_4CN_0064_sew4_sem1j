@@ -4,21 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CSVReader ist eine Klasse zum Parsen von CSV-Zeichenketten und zum Aufteilen in Spalten.
+ __author__ = Morris TIchy
  */
 public class CSVReaderV2 {
 
-    // Liste zum Speichern der Ergebnisse (Spalten)
-    List<String> erg = new ArrayList<>();
+    List<String> columns = new ArrayList<>();
 
-    // Aktuelle Zeichenkette für die aktuelle Spalte
-    String akt = "";
+    String currentColumn = "";
 
-    // Vorheriger Zustand während des Parsens
-    State previState;
-
-    // Zähler für Anführungszeichen in einer Zeichenkette
-    int StringTag;
+    State prevState;
+    int quoteCounter;
 
     /**
      * Enum für verschiedene Zustände während des Parsens.
@@ -27,148 +22,102 @@ public class CSVReaderV2 {
         /**
          * Zustand für die Verarbeitung von regulären Spalten.
          */
-        Coloumn {
+        COLUMN {
+            public State quoteCounter;
+
+
+
+
             /**
-             * Verarbeitet das aktuelle Zeichen und gibt den neuen Zustand zurück.
-             *
-             * @param c       Das aktuelle Zeichen
-             * @param context Die Instanz des CSVReader, die den Zustand verwaltet
-             * @return Der neue Zustand
-             * @throws IllegalArgumentException Wenn ein ungültiges Zeichen in einer Zeichenkette gefunden wird
+             * @param c       previous char
+             * @param context CSVReader, which shows the state
+             * @return new State
+             * @throws IllegalArgumentException if a unknown symbol
              */
             State handleChar(char c, CSVReaderV2 context) {
                 if (Character.isWhitespace(c)) {
-                    return whitespace;
-                } else if (Character.isLetter(c) && context.previState == StringTag) {
-                    throw new IllegalArgumentException("Ungültiges Zeichen in Zeichenkette gefunden");
+                    return WHITESPACE;
+                } else if (Character.isLetter(c) && context.prevState == quoteCounter) {
+                    throw new IllegalArgumentException("unknown symbol");
                 } else if (c == ',') {
-                    context.erg.add(context.akt);
-                    context.akt = "";
-                    context.previState = Coloumn;
-                    context.StringTag = 0;
-                    return NoColoum;
-                } else if (c == '\"' && context.StringTag > 0) {
-                    context.akt += '\"';
-                    return StringTag;
+                    context.columns.add(context.currentColumn);
+                    context.currentColumn = "";
+                    context.prevState = COLUMN;
+                    context.quoteCounter = 0;
+                    return NO_COLUMN;
+                } else if (c == '\"' && context.quoteCounter > 0) {
+                    context.currentColumn += '\"';
+                    return QUOTE;
                 } else if (c == '\"') {
-                    context.previState = Coloumn;
-                    return StringTag;
+                    context.prevState = COLUMN;
+                    return QUOTE;
                 }
-                context.akt += c;
-                context.previState = Coloumn;
-                return Coloumn;
+                context.currentColumn += c;
+                context.prevState = COLUMN;
+                return COLUMN;
             }
         },
-
-        /**
-         * Zustand, wenn keine aktuelle Spalte vorhanden ist.
-         */
-        NoColoum {
-            /**
-             * Verarbeitet das aktuelle Zeichen und gibt den neuen Zustand zurück.
-             *
-             * @param c       Das aktuelle Zeichen
-             * @param context Die Instanz des CSVReader, die den Zustand verwaltet
-             * @return Der neue Zustand
-             */
+        NO_COLUMN {
             State handleChar(char c, CSVReaderV2 context) {
                 if (c == ',') {
-                    context.akt += "";
-                    context.erg.add(context.akt);
-                    return NoColoum;
+                    context.currentColumn += "";
+                    context.columns.add(context.currentColumn);
+                    return NO_COLUMN;
                 } else if (c == '\"') {
-                    context.previState = NoColoum;
-                    return StringTag;
+                    context.prevState = NO_COLUMN;
+                    return QUOTE;
                 }
-                context.akt += c;
-                return Coloumn;
+                context.currentColumn += c;
+                return COLUMN;
             }
         },
+        QUOTE {
 
-        /**
-         * Zustand für die Verarbeitung von Zeichenketten.
-         */
-        StringTag {
-            /**
-             * Verarbeitet das aktuelle Zeichen und gibt den neuen Zustand zurück.
-             *
-             * @param c       Das aktuelle Zeichen
-             * @param context Die Instanz des CSVReader, die den Zustand verwaltet
-             * @return Der neue Zustand
-             */
             State handleChar(char c, CSVReaderV2 context) {
                 if (c == '\"') {
-                    context.previState = StringTag;
-                    context.StringTag++;
-                    System.out.println(context.StringTag);
-                    return Coloumn;
+                    context.prevState = QUOTE;
+                    context.quoteCounter++;
+                    System.out.println(context.quoteCounter);
+                    return COLUMN;
                 }
-                context.akt += c;
-                return StringTag;
+                context.currentColumn += c;
+                return QUOTE;
             }
         },
-
-        /**
-         * Zustand für die Verarbeitung von Leerzeichen.
-         */
-        whitespace {
-            /**
-             * Verarbeitet das aktuelle Zeichen und gibt den neuen Zustand zurück.
-             *
-             * @param c       Das aktuelle Zeichen
-             * @param context Die Instanz des CSVReader, die den Zustand verwaltet
-             * @return Der neue Zustand
-             */
+        WHITESPACE {
             @Override
             State handleChar(char c, CSVReaderV2 context) {
                 if (Character.isLetter(c)) {
-                    return Coloumn;
+                    return COLUMN;
                 } else if (c == '\"') {
-                    return StringTag;
+                    return QUOTE;
                 } else if (c == ',') {
-                    return NoColoum;
+                    return NO_COLUMN;
                 }
-                return whitespace;
+                return WHITESPACE;
             }
         };
-
-        /**
-         * Abstrakte Methode zum Verarbeiten des aktuellen Zeichens und Übergang zum neuen Zustand.
-         *
-         * @param c       Das aktuelle Zeichen
-         * @param context Die Instanz des CSVReader, die den Zustand verwaltet
-         * @return Der neue Zustand
-         */
         abstract State handleChar(char c, CSVReaderV2 context);
     }
 
     /**
-     * Teilt die übergebene Zeichenkette in Spalten auf.
-     *
-     * @param text Die zu verarbeitende CSV-Zeichenkette
-     * @return Eine Liste von Spalten (Strings)
+     * @param text finished csv-file
+     * @return a list
      */
     public List<String> split(String text) {
-        // Initialer Zustand ist 'Coloumn'
-        State state = State.Coloumn;
-        // Liste für Ergebnisse zurücksetzen
-        erg = new ArrayList<>();
-        // Durchlaufe alle Zeichen in der Zeichenkette
+        State state = State.COLUMN;
+        columns = new ArrayList<>();
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            // Verarbeite das Zeichen basierend auf dem aktuellen Zustand
             state = state.handleChar(c, this);
-            System.out.println(state + " ");
-            // Überprüfe, ob es das letzte Zeichen ist und die aktuelle Spalte beendet werden muss
             if (i == text.length() - 1 && c == ',') {
-                akt += "";
-                erg.add(akt);
+                currentColumn += "";
+                columns.add(currentColumn);
             } else if (i == text.length() - 1) {
-                erg.add(akt);
-                akt = "";
+                columns.add(currentColumn);
+                currentColumn = "";
             }
-            System.out.print(c + " state");
         }
-        return erg;
+        return columns;
     }
 }
